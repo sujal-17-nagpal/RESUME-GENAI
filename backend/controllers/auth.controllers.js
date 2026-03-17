@@ -127,4 +127,4 @@ const getMe = async(req,res)=>{
       },
     });
 }
-module.exports = { registerUser ,loginUser,logoutUser,getMe};
+module.exports = {registerUser ,loginUser,logoutUser,getMe};
