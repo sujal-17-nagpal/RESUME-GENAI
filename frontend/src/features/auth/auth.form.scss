@@ -140,12 +140,12 @@ main {
     color: rgba(255, 255, 255, 0.75);
 
     a {
-      color: #a5b4fc;
+      color: linear-gradient(135deg, #4f46e5, #22c55e);
       text-decoration: none;
     }
 
     a:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
 }

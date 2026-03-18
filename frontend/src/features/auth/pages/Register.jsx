@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Link } from "react-router";
+
 const Register = () => {
   async function handleSubmit(e) {
     e.preventDefault();
@@ -43,6 +45,10 @@ const Register = () => {
 
           <button className="button primary-button">Register</button>
         </form>
+
+        <p>
+          Already have an account ??<Link to={"/login"}>Login</Link>
+        </p>
       </div>
     </main>
   );
