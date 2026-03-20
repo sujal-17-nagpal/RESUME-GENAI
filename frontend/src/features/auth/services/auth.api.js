@@ -12,7 +12,6 @@ export async function register(username, email, password) {
       email,
       password,
     });
-
     return response.data;
   } catch (error) {
     console.log(error);
