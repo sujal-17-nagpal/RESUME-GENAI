@@ -29,6 +29,7 @@ export const useAuth = () => {
       setUser(data.user);
     } catch (error) {
       console.log(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -36,9 +37,16 @@ export const useAuth = () => {
 
   const handleLogout = async () => {
     setLoading(true);
-    await logout();
-    setUser(null);
-    setLoading(false);
+
+    try {
+      await logout();
+      setUser(null);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return { user, loading, handleLogin, handleRegister, handleLogout };
