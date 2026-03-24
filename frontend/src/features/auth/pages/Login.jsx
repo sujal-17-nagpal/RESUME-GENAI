@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { loading, handleLogin } = useAuth();
+  const { loading, handleLogin, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -30,6 +30,10 @@ const Login = () => {
       </main>
     );
   }
+
+  // if (user) {
+  //   navigate("/");
+  // }
 
   return (
     <main>
