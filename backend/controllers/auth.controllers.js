@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const blacklistTokenModel = require("../models/blacklistTokenModel");
 
 const registerUser = async (req, res) => {
-    
   try {
     const { userName, email, password } = req.body;
     if (!userName) {
@@ -56,26 +55,28 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async(req,res)=>{
+const loginUser = async (req, res) => {
   try {
-    const {email,password} = req.body
-    if(!email){
-      return res.status(404).json({message : "email is a required field"})
+    const { email, password } = req.body;
+    if (!email) {
+      return res.status(404).json({ message: "email is a required field" });
     }
-    if(!password){
-      return res.status(404).json({message : "password is required"})
+    if (!password) {
+      return res.status(404).json({ message: "password is required" });
     }
 
-    const user = await userModel.findOne({email})
+    const user = await userModel.findOne({ email });
 
-    if(!user){
-      return res.status(404).json({message : "no user exists with this email"})
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "no user exists with this email" });
     }
 
     try {
-      await bcrypt.compare(password,user.password)
+      await bcrypt.compare(password, user.password);
     } catch (error) {
-      return res.status(400).json({message : "incorrect password"})
+      return res.status(400).json({ message: "incorrect password" });
     }
 
     const token = jwt.sign(
@@ -93,38 +94,37 @@ const loginUser = async(req,res)=>{
         email: user.email,
       },
     });
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-const logoutUser = async(req,res)=>{
-  const token = req.cookies.token
+const logoutUser = async (req, res) => {
+  const token = req.cookies.token;
 
-  if(token){
-    await blacklistTokenModel.create({token})
+  if (token) {
+    await blacklistTokenModel.create({ token });
   }
 
-  res.clearCookie("token")
+  res.clearCookie("token");
 
   res.status(200).json({
-    message:"log out successful"
-  })
-}
+    message: "log out successful",
+  });
+};
 
 // get user data
-const getMe = async(req,res)=>{
-  const user = await userModel.findById(req.user.id)
+const getMe = async (req, res) => {
+  const user = await userModel.findById(req.user.id);
 
   return res.status(200).json({
-      message: "user details fetched successfully",
-      user: {
-        id: user._id,
-        userName: user.userName,
-        email: user.email,
-      },
-    });
-}
-module.exports = {registerUser ,loginUser,logoutUser,getMe};
+    message: "user details fetched successfully",
+    user: {
+      id: user._id,
+      userName: user.userName,
+      email: user.email,
+    },
+  });
+};
+module.exports = { registerUser, loginUser, logoutUser, getMe };
