@@ -95,6 +95,19 @@ async function generateInterviewReport({
   resume,
   selfDescription,
   jobDescription,
-}) {}
+}) {
+  const prompt = `Generate an interview report for the candidate with the following details: Resume:${resume} self Description : ${selfDescription} job Description : ${jobDescription}`;
 
-module.exports = invokeGeminiAi;
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: "",
+    config: {
+      responseMimeType: "application/json",
+      responseJsonSchema: zodToJsonSchema(interviewReportSchema),
+    },
+  });
+
+  console.log(JSON.parse(response.text));
+}
+
+module.exports = generateInterviewReport;
