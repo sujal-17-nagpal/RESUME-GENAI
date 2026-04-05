@@ -46,10 +46,10 @@ const skillGapSchema = new mongoose.Schema(
       type: String,
       required: [true, "Skill is required"],
     },
-    severinity: {
+    severity: {
       type: String,
       enum: ["low", "medium", "high"],
-      required: [true, "Severinity is required"],
+      required: [true, "Severity is required"],
     },
   },
   {
@@ -79,7 +79,7 @@ const preparationPlanSchema = new mongoose.Schema(
 
 const interviewReportSchema = new mongoose.Schema(
   {
-    jobDesciption: {
+    jobDescription: {
       type: String,
       required: [true, "Job description is required"],
     },
@@ -89,15 +89,19 @@ const interviewReportSchema = new mongoose.Schema(
     selfDescription: {
       type: String,
     },
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+    },
     matchScore: {
       type: Number,
       min: 0,
       max: 100,
     },
-    technicalQuestions: { technicalQuestionSchema },
-    behavioralQuestions: { behavioralQuestionSchema },
-    skillGaps: { skillGapSchema },
-    preparationPlan: { preparationPlanSchema },
+    technicalQuestions: [technicalQuestionSchema],
+    behavioralQuestions: [behavioralQuestionSchema],
+    skillGaps: [skillGapSchema],
+    preparationPlan: [preparationPlanSchema],
   },
   {
     timestamps: true,
