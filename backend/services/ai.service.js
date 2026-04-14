@@ -85,11 +85,6 @@ const interviewReportSchema = z.object({
     .describe(
       "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively",
     ),
-  title: z
-    .string()
-    .describe(
-      "The title of the job for which the interview report is generated",
-    ),
 });
 
 async function generateInterviewReport({
@@ -98,18 +93,29 @@ async function generateInterviewReport({
   jobDescription,
 }) {
   const prompt = `
-Generate a interview report for a candidate with the following details:
-Resume:${resume}
-Self Description:${selfDescription}
-Job Description:${jobDescription}
+Generate a comprehensive interview report for a candidate with the following details:
+Resume: ${resume}
+Self Description: ${selfDescription || "Not provided"}
+Job Description: ${jobDescription || "Not provided"}
+
+CRITICAL INSTRUCTIONS:
+1. You MUST NOT return empty arrays for technicalQuestions, behavioralQuestions, skillGaps, or preparationPlan. 
+2. If Job Description or other details are missing or vague, make reasonable assumptions based strictly on the candidate's Resume to infer the likely target role and technology stack.
+3. You MUST return ONLY a valid JSON object matching this EXACT structure:
+{
+  "matchScore": 85,
+  "technicalQuestions": [{"question": "Q1", "intention": "I1", "answer": "A1"}],
+  "behavioralQuestions": [{"question": "Q2", "intention": "I2", "answer": "A2"}],
+  "skillGaps": [{"skill": "Skill1", "severity": "medium"}],
+  "preparationPlan": [{"day": 1, "focus": "F1", "tasks": ["T1"]}]
+}
 `;
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
     config: {
-      responseMimeType: "application/json",
-      responseSchema: zodToJsonSchema(interviewReportSchema),
+      responseMimeType: "application/json"
     },
   });
 
