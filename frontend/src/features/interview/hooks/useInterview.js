@@ -14,8 +14,10 @@ export const useInterview = ()=>{
     const generateReport = async({jobDescription,selfDescription,resumeFile})=>{
         setLoading(true)
         try {
+            console.log("chali useInterview.js")
             const response = await generateInterviewReportApi({jobDescription,selfDescription,resumeFile})
             setReport(response.interviewReport)
+            return response.interviewReport
         } catch (error) {
             console.log(error)
         }
@@ -29,6 +31,7 @@ export const useInterview = ()=>{
         try {
             const response = await  getInterviewReportById(interviewId)
             setReport(response.interviewReport)
+            return response.interviewReport
         } catch (error) {
             console.log(error)
         } finally{
@@ -41,7 +44,7 @@ export const useInterview = ()=>{
         try {
             const response = await getAllInterviewReports()
         setReports(response.interviewReports)
-    
+            return response.interviewReports
         } catch (error) {
             console.log(error)
         }

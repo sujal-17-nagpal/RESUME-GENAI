@@ -35,6 +35,8 @@ const generateInterviewReportController = async (req, res) => {
     ...interviewReportByAi,
   });
 
+  console.log(interviewReport)
+
   res.status(201).json({
     message: "interview report generated successfully",
     interviewReport,

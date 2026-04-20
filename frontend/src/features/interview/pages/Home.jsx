@@ -13,15 +13,24 @@ const Home = () => {
   const navigate = useNavigate()
 
   const handleGenerateReport = async()=>{
-    // console.log("chala")
+    console.log("chala")
     const resumeFile = resumeInputRef.current.files[0]
     const data = await generateReport({jobDescription,selfDescription,resumeFile})
-    
-    navigate(`/interview/${data._id}`)
+    console.log(data)
+    if(data) navigate("/interview")
   }
 
   return (
     <main className="home">
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>Generating your interview report<span className="dots"></span></p>
+            <small>This may take a moment...</small>
+          </div>
+        </div>
+      )}
       <div className="home__wrapper">
         <section className="home__left">
           <div className="textarea-label">
@@ -32,13 +41,14 @@ const Home = () => {
             id="jobDescription"
             name="jobDescription"
             placeholder="Enter job description here"
+            disabled={loading}
           />
         </section>
 
         <section className="home__right">
           <div className="input-group">
             <label htmlFor="resume">Upload Resume</label>
-            <input ref={resumeInputRef} type="file" name="resume" id="resume" accept=".pdf" />
+            <input ref={resumeInputRef} type="file" name="resume" id="resume" accept=".pdf" disabled={loading} />
           </div>
 
           <div className="input-group">
@@ -48,11 +58,16 @@ const Home = () => {
               id="selfDescription"
               name="selfDescription"
               placeholder="Describe yourself"
+              disabled={loading}
             />
           </div>
 
-          <button onClick={handleGenerateReport} className="generate-btn" type="button">
-            Generate Interview Report
+          <button onClick={handleGenerateReport} className="generate-btn" type="button" disabled={loading}>
+            {loading ? (
+              <><span className="btn-spinner"></span> Generating...</>
+            ) : (
+              "Generate Interview Report"
+            )}
           </button>
         </section>
       </div>

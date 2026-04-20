@@ -91,7 +91,7 @@ const interviewReportSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: [true, "Title is required"],
+      // required: [true, "Title is required"],
     },
     matchScore: {
       type: Number,

@@ -15,9 +15,9 @@ export const generateInterviewReportApi = async ({
   formData.append("jobDescription", jobDescription);
   formData.append("selfDescription", selfDescription);
   formData.append("resume", resumeFile);
-
+    console.log("chali Interview api")
   const response = await api.post("/api/interview/", formData);
-
+    console.log(response)
   return response.data;
 };
 
