@@ -1,57 +1,11 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/Interview.scss";
-
-const mockReport = {
-  matchScore: 85,
-  jobDescription: "Senior React Developer with experience in modern frontend development...",
-  technicalQuestions: [
-    {
-      question: "Can you explain how React's Virtual DOM works under the hood?",
-      intention: "Assess deep understanding of React internals and rendering.",
-      answer: "The Virtual DOM is a lightweight copy of the actual DOM. React uses a diffing algorithm to compare the new Virtual DOM with the old one, and efficiently applies only the changed elements to the real DOM.",
-    },
-    {
-      question: "What are React Hooks and why were they introduced over classes?",
-      intention: "Check knowledge of modern React patterns and their motivation.",
-      answer: "Hooks allow state and lifecycle features in functional components. They were introduced to reuse stateful logic more easily, avoid complex class lifecycles, and reduce 'wrapper hell'.",
-    },
-  ],
-  behavioralQuestions: [
-    {
-      question: "Tell me about a time you had to deal with a difficult architectural decision.",
-      intention: "Evaluate problem-solving and technical leadership skills.",
-      answer: "I would emphasize analyzing tradeoffs, communicating with the team, proposing a proof of concept, and making data-driven decisions while considering future scalability.",
-    },
-  ],
-  skillGaps: [
-    { skill: "GraphQL", severity: "high" },
-    { skill: "Docker & Containerization", severity: "medium" },
-    { skill: "Advanced CI/CD setup", severity: "low" },
-  ],
-  preparationPlan: [
-    {
-      day: 1,
-      focus: "GraphQL Basics",
-      tasks: ["Learn queries and mutations", "Set up Apollo Client in a demo repo"],
-    },
-    {
-      day: 2,
-      focus: "Containerization Patterns",
-      tasks: ["Write a basic Dockerfile for a Node app", "Understand docker-compose linking"],
-    },
-    {
-      day: 3,
-      focus: "Mock Interviews",
-      tasks: ["Practice behavioral questions", "Review advanced React hooks"],
-    },
-  ],
-};
+import { useInterview } from "../hooks/useInterview";
 
 const Interview = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const report = location.state?.report || mockReport;
+  const { report, loading } = useInterview();
 
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -63,6 +17,29 @@ const Interview = () => {
       default: return "badge-default";
     }
   };
+
+  if (loading) {
+    return (
+      <div className="interview-page">
+        <div className="interview-layout pt-glass" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "80vh" }}>
+          <p style={{ fontSize: "1.2rem", opacity: 0.7 }}>Loading report&hellip;</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!report) {
+    return (
+      <div className="interview-page">
+        <div className="interview-layout pt-glass" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh", gap: "1rem" }}>
+          <p style={{ fontSize: "1.2rem", opacity: 0.7 }}>No report available.</p>
+          <button className="back-btn" onClick={() => navigate("/")}>
+            &larr; Go Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="interview-page">
