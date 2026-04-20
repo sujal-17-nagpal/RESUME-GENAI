@@ -1,8 +1,8 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { InterviewContext } from "../interview.context";
 import { generateInterviewReportApi, getAllInterviewReports, getInterviewReportById } from "../services/interview.api";
 
-export const useInterview = ()=>{
+export const useInterview = (interviewId)=>{
     const context = useContext(InterviewContext)
 
     if(!context){
@@ -10,6 +10,22 @@ export const useInterview = ()=>{
     }
 
     const { loading, setLoading, report, setReport, reports, setReports } = context
+
+    useEffect(()=>{
+        if(interviewId && !report){
+            setLoading(true)
+            getInterviewReportById(interviewId)
+                .then((response)=>{
+                    setReport(response.interviewReport)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+                .finally(()=>{
+                    setLoading(false)
+                })
+        }
+    },[interviewId])
 
     const generateReport = async({jobDescription,selfDescription,resumeFile})=>{
         setLoading(true)

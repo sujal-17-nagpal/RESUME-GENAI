@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/Interview.scss";
 import { useInterview } from "../hooks/useInterview";
 
 const Interview = () => {
   const navigate = useNavigate();
-  const { report, loading } = useInterview();
+  const {interviewId} = useParams()
+  const { report, loading } = useInterview(interviewId);
 
   const [activeTab, setActiveTab] = useState("overview");
 
