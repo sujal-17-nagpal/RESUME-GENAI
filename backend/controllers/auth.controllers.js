@@ -2,6 +2,7 @@ const userModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const blacklistTokenModel = require("../models/blacklistTokenModel");
+const { response } = require("express");
 
 const registerUser = async (req, res) => {
   try {
@@ -74,7 +75,13 @@ const loginUser = async (req, res) => {
     }
 
     try {
-      await bcrypt.compare(password, user.password);
+      // console.log("login user controller called")
+      const resp = await bcrypt.compare(password, user.password);
+      // console.log(resp)
+      if(resp == false){
+      return res.status(400).json({ message: "incorrect password" });
+
+      }
     } catch (error) {
       return res.status(400).json({ message: "incorrect password" });
     }
