@@ -12,7 +12,7 @@ export const useInterview = (interviewId)=>{
     const { loading, setLoading, report, setReport, reports, setReports } = context
 
     useEffect(()=>{
-        if(interviewId && !report){
+        if(interviewId){
             setLoading(true)
             getInterviewReportById(interviewId)
                 .then((response)=>{
