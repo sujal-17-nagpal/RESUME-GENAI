@@ -27,6 +27,18 @@ export const useInterview = (interviewId)=>{
         }
     },[interviewId])
 
+    useEffect(()=>{
+        if(!interviewId){
+            getAllInterviewReports()
+                .then((response)=>{
+                    setReports(response.interviewReports)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+        }
+    },[])
+
     const generateReport = async({jobDescription,selfDescription,resumeFile})=>{
         setLoading(true)
         try {

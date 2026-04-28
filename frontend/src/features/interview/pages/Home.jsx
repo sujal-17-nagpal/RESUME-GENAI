@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom"
 
 const Home = () => {
 
-  const {loading,generateReport} = useInterview()
+  const {loading,generateReport,reports} = useInterview()
   const  [jobDescription,setJobDescription] = useState("")
   const [selfDescription,setSelfDescription] = useState("")
 
@@ -19,6 +19,20 @@ const Home = () => {
     console.log(data)
     if(data) navigate(`/interview/${data._id}`)
   }
+
+  const getScoreColor = (score) => {
+    if (score >= 75) return "#22c55e";
+    if (score >= 50) return "#eab308";
+    return "#ef4444";
+  };
+
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   return (
     <main className="home">
@@ -71,6 +85,39 @@ const Home = () => {
           </button>
         </section>
       </div>
+
+      {/* Previous Reports Section */}
+      {reports && reports.length > 0 && (
+        <section className="reports-section">
+          <h2 className="reports-section__title">Previous Reports</h2>
+          <div className="reports-grid">
+            {reports.map((r) => (
+              <div
+                key={r._id}
+                className="report-card"
+                onClick={() => navigate(`/interview/${r._id}`)}
+              >
+                <div className="report-card__header">
+                  <div
+                    className="report-card__score"
+                    style={{ "--score-color": getScoreColor(r.matchScore) }}
+                  >
+                    <span className="score-value">{r.matchScore ?? "–"}</span>
+                    <span className="score-label">%</span>
+                  </div>
+                </div>
+                <div className="report-card__body">
+                  <h3 className="report-card__title">{r.title || "Interview Report"}</h3>
+                  <p className="report-card__date">{formatDate(r.createdAt)}</p>
+                </div>
+                <div className="report-card__footer">
+                  <span className="view-link">View Report &rarr;</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 };
