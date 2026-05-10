@@ -55,7 +55,10 @@ export const useAuth = () => {
     const getAndSetUser = async () => {
       const data = await getMe();
       if (!data) {
-        navigate("/login");
+        if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+    navigate("/login");
+  }
+  setLoading(false);
         setLoading(false);
       } else {
         setUser(data.user);

@@ -104,25 +104,50 @@ CRITICAL INSTRUCTIONS:
 2. If Job Description or other details are missing or vague, make reasonable assumptions based strictly on the candidate's Resume to infer the likely target role and technology stack.
 3. You MUST return ONLY a valid JSON object matching this EXACT structure:
 {
+  "title": "Interview Report for [Role]",
   "matchScore": 85,
   "technicalQuestions": [{"question": "Q1", "intention": "I1", "answer": "A1"}],
   "behavioralQuestions": [{"question": "Q2", "intention": "I2", "answer": "A2"}],
   "skillGaps": [{"skill": "Skill1", "severity": "medium"}],
   "preparationPlan": [{"day": 1, "focus": "F1", "tasks": ["T1"]}]
 }
+
+4. Each technicalQuestion and behavioralQuestion MUST be an object with keys: "question", "intention", "answer".
+5. Each skillGap MUST be an object with keys: "skill", "severity" (one of "low", "medium", "high").
+6. Each preparationPlan item MUST be an object with keys: "day" (number), "focus" (string), "tasks" (array of strings).
+7. "matchScore" MUST be a number between 0 and 100.
+8. "title" MUST be a short descriptive title string.
+9. Do NOT wrap the JSON in markdown code fences. Return raw JSON only.
 `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    // model:"gemini-2.5-flash",
+    // model: "gemini-3-flash-preview",
+    model: "gemini-2.5-flash",
     // model: "gemini-2.0-flash",
     contents: prompt,
     config: {
-      responseMimeType: "application/json"
+      responseMimeType: "application/json",
     },
   });
 
-  return JSON.parse(response.text);
+  let rawText = response.text;
+  if (typeof rawText === "string") {
+    rawText = rawText.trim();
+    // Remove markdown code fences if present
+    if (rawText.startsWith("```")) {
+      rawText = rawText.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
+    }
+  }
+
+  const parsed = JSON.parse(rawText);
+
+  // Validate the structure before returning
+  if (!Array.isArray(parsed.technicalQuestions) || !Array.isArray(parsed.behavioralQuestions) ||
+      !Array.isArray(parsed.skillGaps) || !Array.isArray(parsed.preparationPlan)) {
+    throw new Error("AI returned invalid report structure: expected arrays for questions, skillGaps, and preparationPlan");
+  }
+
+  return parsed;
 }
 
 async function generatePdfFromHtml(htmlContent) {
