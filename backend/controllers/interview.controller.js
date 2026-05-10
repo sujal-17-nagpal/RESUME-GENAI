@@ -1,5 +1,5 @@
 const { PDFParse } = require("pdf-parse");
-const {generateInterviewReport} = require("../services/ai.service");
+const {generateInterviewReport, generateResumePdf} = require("../services/ai.service");
 const interviewReportModel = require("../models/InterviewReport.model");
 
 const generateInterviewReportController = async (req, res) => {
@@ -83,24 +83,33 @@ const getAllInterviewReports = async (req, res) => {
   }
 };
 
-// const generateResumePdf = async(req,res)=>{
-//   const {interviewReportId} = req.params
+const generateResumePdfController = async (req, res) => {
+  try {
+    const { interviewReportId } = req.params;
 
-//   const interviewReport = await interviewReportModel.findById(interviewReportId)
+    const interviewReport = await interviewReportModel.findOne({
+      _id: interviewReportId,
+      user: req.user.id,
+    });
 
-//   if(!interviewReport){
-//     return res.status(404).json({message:"Interview report not found"})
-//   }
+    if (!interviewReport) {
+      return res.status(404).json({ message: "Interview report not found" });
+    }
 
-//   const { resume, jobDescription, selfDescription } = interviewReport
+    const { resume, jobDescription, selfDescription } = interviewReport;
 
-//     const pdfBuffer = await generateResumedf({ resume, jobDescription, selfDescription })
-//     res.set({
-//         "Content-Type": "application/pdf",
-//         "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
-//     })
+    const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription });
 
-//     res.send(pdfBuffer)
-// }
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`,
+    });
 
-module.exports = { generateInterviewReportController,getInterviewReportById,getAllInterviewReports};
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to generate resume PDF", error: String(error) });
+  }
+};
+
+module.exports = { generateInterviewReportController, getInterviewReportById, getAllInterviewReports, generateResumePdfController };

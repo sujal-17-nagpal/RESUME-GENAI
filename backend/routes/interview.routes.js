@@ -4,6 +4,7 @@ const {
   generateInterviewReportController,
   getInterviewReportById,
   getAllInterviewReports,
+  generateResumePdfController,
 } = require("../controllers/interview.controller");
 const upload = require("../middlewares/file.middleware");
 
@@ -17,6 +18,8 @@ interviewRouter.post(
 );
 
 interviewRouter.get("/", isAuth, getAllInterviewReports);
+
+interviewRouter.get("/:interviewReportId/resume-pdf", isAuth, generateResumePdfController);
 
 interviewRouter.get("/:interviewId", isAuth, getInterviewReportById);
 

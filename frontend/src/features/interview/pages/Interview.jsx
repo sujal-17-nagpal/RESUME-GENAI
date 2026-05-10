@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/Interview.scss";
 import { useInterview } from "../hooks/useInterview";
+import { downloadResumePdf } from "../services/interview.api";
 
 const Interview = () => {
   const navigate = useNavigate();
@@ -9,6 +10,19 @@ const Interview = () => {
   const { report, loading } = useInterview(interviewId);
 
   const [activeTab, setActiveTab] = useState("overview");
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setPdfLoading(true);
+    try {
+      await downloadResumePdf(interviewId);
+    } catch (error) {
+      console.error("Failed to download resume PDF", error);
+      alert("Failed to generate resume PDF. Please try again.");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
   const getSeverityClass = (severity) => {
     switch (severity.toLowerCase()) {
@@ -81,6 +95,35 @@ const Interview = () => {
               Preparation Plan
             </button>
           </nav>
+
+          <button
+            className="back-btn"
+            onClick={handleDownloadPdf}
+            disabled={pdfLoading}
+            style={{ 
+              marginTop: "auto", 
+              width: "100%", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center",
+              background: pdfLoading ? "rgba(255,255,255,0.05)" : "rgba(124, 58, 237, 0.1)",
+              border: pdfLoading ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(124, 58, 237, 0.3)",
+              padding: "0.8rem",
+              borderRadius: "12px",
+              color: "#fff"
+            }}
+          >
+            {pdfLoading ? (
+              <>
+                <div className="spinner"></div>
+                <span>Downloading...</span>
+              </>
+            ) : (
+              <>
+                <span>⬇ Download Resume PDF</span>
+              </>
+            )}
+          </button>
         </aside>
 
         {/* Main Content Area */}

@@ -30,3 +30,19 @@ export const getAllInterviewReports = async () => {
   const res = await api.get("/api/interview/");
   return res.data;
 };
+
+export const downloadResumePdf = async (interviewReportId) => {
+  const res = await api.get(`/api/interview/${interviewReportId}/resume-pdf`, {
+    responseType: "blob",
+  });
+
+  // Trigger browser download
+  const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `resume_${interviewReportId}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
