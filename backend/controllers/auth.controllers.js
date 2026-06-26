@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, userName: user.userName },
       process.env.JWT_SECRET,
-      {expiresIn:"1d"}
+      { expiresIn: "1d" },
     );
 
     res.cookie("token", token);
@@ -79,9 +79,8 @@ const loginUser = async (req, res) => {
       // console.log("login user controller called")
       const resp = await bcrypt.compare(password, user.password);
       // console.log(resp)
-      if(resp == false){
-      return res.status(400).json({ message: "incorrect password" });
-
+      if (resp == false) {
+        return res.status(400).json({ message: "incorrect password" });
       }
     } catch (error) {
       return res.status(400).json({ message: "incorrect password" });
@@ -90,7 +89,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, userName: user.userName },
       process.env.JWT_SECRET,
-      {expiresIn:"1d"}
+      { expiresIn: "1d" },
     );
 
     res.cookie("token", token);
@@ -117,6 +116,10 @@ const logoutUser = async (req, res) => {
   }
 
   res.clearCookie("token");
+
+  await blacklistTokenModel.create({
+    token: token,
+  });
 
   res.status(200).json({
     message: "log out successful",
