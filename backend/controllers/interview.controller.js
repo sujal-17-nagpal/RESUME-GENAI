@@ -1,6 +1,7 @@
 const { PDFParse } = require("pdf-parse");
 const {generateInterviewReport, generateResumePdf} = require("../services/ai.service");
 const interviewReportModel = require("../models/InterviewReport.model");
+const appCache = require("../config/cache");
 
 const generateInterviewReportController = async (req, res) => {
   try {
@@ -36,6 +37,9 @@ const generateInterviewReportController = async (req, res) => {
       ...interviewReportByAi,
     });
 
+    appCache.set(`report_${req.user.id}_${interviewReport._id}`,interviewReport,3600)
+
+
     res.status(201).json({
       message: "interview report generated successfully",
       interviewReport,
@@ -49,12 +53,22 @@ const generateInterviewReportController = async (req, res) => {
 const getInterviewReportById = async (req, res) => {
   try {
     const { interviewId } = req.params;
+    const cacheKey = `report_${req.user.id}_${interviewId}`
+   const cachedReport = appCache.get(cacheKey)
 
+   if(cachedReport){
+    return res.status(200).json({
+      message: "Interview report fetched successfully",
+      interviewReport:cachedReport
+    });
+   }
     const interviewReport = await interviewReportModel.findOne({ _id: interviewId,user:req.user.id });
 
     if (!interviewReport) {
       return res.status(404).json({ message: "Interview report not found" });
     }
+
+    appCache.set(cacheKey,interviewReport,3600)
 
     res.status(200).json({
       message: "Interview report fetched successfully",
@@ -87,14 +101,21 @@ const generateResumePdfController = async (req, res) => {
   try {
     const { interviewReportId } = req.params;
 
-    const interviewReport = await interviewReportModel.findOne({
+    const cacheKey = `report_${req.user.id}_${interviewReportId}`
+    let interviewReport = appCache.get(cacheKey)
+
+    if(!interviewReport){
+      interviewReport = await interviewReportModel.findOne({
       _id: interviewReportId,
       user: req.user.id,
     });
+    }
 
     if (!interviewReport) {
       return res.status(404).json({ message: "Interview report not found" });
     }
+
+    appCache.set(cacheKey,interviewReport,3600)
 
     const { resume, jobDescription, selfDescription } = interviewReport;
 
