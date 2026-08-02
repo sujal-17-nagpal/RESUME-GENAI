@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const blacklistTokenModel = require("../models/blacklistTokenModel");
 const { response } = require("express");
+const appCache = require("../config/cache");
 
 const registerUser = async (req, res) => {
   try {
@@ -109,17 +110,16 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
+
   const token = req.cookies.token;
 
   if (token) {
+    appCache.del(token)
+    appCache.set(`blacklist_${token}`,true,86400)
     await blacklistTokenModel.create({ token });
   }
 
   res.clearCookie("token");
-
-  await blacklistTokenModel.create({
-    token: token,
-  });
 
   res.status(200).json({
     message: "log out successful",
